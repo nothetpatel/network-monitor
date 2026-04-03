@@ -33,10 +33,22 @@ def save_devices(devices):
     conn.commit()
     conn.close()
 
+def detect_new_devices(devices):
+    conn = sqlite3.connect("network.db")
+    cursor = conn.cursor()
+
+    for d in devices:
+        cursor.execute("SELECT mac FROM devices WHERE mac = ?", (d['mac'],))
+        result = cursor.fetchone()
+
+        if result is None:
+            print(f"NEW DEVICE DETECTED: IP: {d['ip']} MAC: {d['mac']}")
+
+    conn.close()
 
 init_db()
 devices = scan_network("192.168.2.0/24")
-
+detect_new_devices(devices)
 save_devices(devices)
 
 for device in devices:
