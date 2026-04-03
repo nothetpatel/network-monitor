@@ -1,7 +1,7 @@
 from scapy.all import ARP, Ether, srp
 import sqlite3
 from datetime import datetime
-
+import os, time
 
 def scan_network(network):
     packet = Ether(dst="ff:ff:ff:ff:ff:ff") / ARP(pdst=network)
@@ -46,10 +46,21 @@ def detect_new_devices(devices):
 
     conn.close()
 
-init_db()
-devices = scan_network("192.168.2.0/24")
-detect_new_devices(devices)
-save_devices(devices)
+# main code
 
-for device in devices:
-    print(f"IP: {device['ip']} MAC: {device['mac']}")
+init_db()
+
+while True:
+    os.system("clear")
+
+    devices = scan_network("192.168.2.0/24")
+    detect_new_devices(devices)
+    save_devices(devices)
+
+    for device in devices:
+        print(f"IP: {device['ip']} MAC: {device['mac']}")
+    
+
+    print(f"Scan completed at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+
+    time.sleep(60)
